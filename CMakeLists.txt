@@ -10,7 +10,7 @@ include(FetchContent)
 # Fetch Protobuf
 # FetchContent_Declare(
 #     protobuf
-#     GIT_REPOSITORY git@github.com:protocolbuffers/protobuf.git
+#     GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
 #     GIT_TAG        v3.21.12
 # )
 # FetchContent_MakeAvailable(protobuf)
@@ -18,7 +18,8 @@ include(FetchContent)
 # Fetch gRPC
 FetchContent_Declare(
     grpc
-    GIT_REPOSITORY git@github.com:grpc/grpc.git
+    GIT_REPOSITORY https://github.com/grpc/grpc.git
+    # GIT_REPOSITORY https://github.com/grpc/grpc.git
     GIT_TAG        v1.50.1
 )
 FetchContent_MakeAvailable(grpc)
@@ -26,7 +27,7 @@ FetchContent_MakeAvailable(grpc)
 # Fetch spdlog
 FetchContent_Declare(
     spdlog
-    GIT_REPOSITORY git@github.com:gabime/spdlog.git
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG        v1.11.0
 )
 FetchContent_MakeAvailable(spdlog)
@@ -34,7 +35,7 @@ FetchContent_MakeAvailable(spdlog)
 # Fetch CLI11
 FetchContent_Declare(
     CLI11
-    GIT_REPOSITORY git@github.com:CLIUtils/CLI11.git
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
     GIT_TAG        v2.3.2
 )
 FetchContent_MakeAvailable(CLI11)
@@ -47,7 +48,7 @@ set(gRPC_INSTALL OFF CACHE BOOL "" FORCE)
 # Fetch GoogleTest
 # FetchContent_Declare(
 #     googletest
-#     GIT_REPOSITORY git@github.com:google/googletest.git
+#     GIT_REPOSITORY https://github.com/google/googletest.git
 #     GIT_TAG        release-1.12.1
 # )
 # FetchContent_MakeAvailable(googletest)
