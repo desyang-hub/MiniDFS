@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package minidfs;
+
+// File metadata
+message FileMetadata {
+    string name = 1;
+    int64 size = 2;
+    repeated string block_locations = 3;
+}
+
+// DataNode information
+message DataNodeInfo {
+    string id = 1;
+    string address = 2;
+    int64 last_heartbeat = 3;
+}
+
+// Block location information
+message BlockLocation {
+    string block_id = 1;
+    string data_node_address = 2;
+}
+
+// Register request
+message RegisterRequest {
+    DataNodeInfo datanode_info = 1;
+}
+
+// Register response
+message RegisterResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Heartbeat request
+message HeartbeatRequest {
+    DataNodeInfo datanode_info = 1;
+}
+
+// Heartbeat response
+message HeartbeatResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Get block locations request
+message GetBlockLocationsRequest {
+    string file_path = 1;
+}
+
+// Get block locations response
+message GetBlockLocationsResponse {
+    repeated BlockLocation locations = 1;
+}
+
+// Add block request
+message AddBlockRequest {
+    string file_path = 1;
+    string block_id = 2;
+    string data_node_address = 3;
+}
+
+// Add block response
+message AddBlockResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Write block request (streaming)
+message WriteBlockRequest {
+    string block_id = 1;
+    bytes data = 2;
+}
+
+// Write block response (streaming)
+message WriteBlockResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Read block request (streaming)
+message ReadBlockRequest {
+    string block_id = 1;
+}
+
+// Read block response (streaming)
+message ReadBlockResponse {
+    bytes data = 1;
+}
+
+// NameNode service
+service NameNodeService {
+    // Register DataNode
+    rpc RegisterDataNode(RegisterRequest) returns (RegisterResponse);
+    
+    // Heartbeat from DataNode
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    
+    // Get block locations for a file
+    rpc GetBlockLocations(GetBlockLocationsRequest) returns (GetBlockLocationsResponse);
+    
+    // Add block metadata
+    rpc AddBlock(AddBlockRequest) returns (AddBlockResponse);
+}
+
+// DataNode service
+service DataNodeService {
+    // Write block data
+    rpc WriteBlock(stream WriteBlockRequest) returns (WriteBlockResponse);
+    
+    // Read block data
+    rpc ReadBlock(ReadBlockRequest) returns (stream ReadBlockResponse);
+}
