@@ -10,36 +10,60 @@
 #include "common/logger.h"
 
 namespace minidfs {
-    class DataNode final : public DataNodeService::Service {
-    public:
-        DataNode(const std::string& address, const std::string& namenode_address);
-        ~DataNode();
 
-        void start();
-        void stop();
+/**
+ * @brief DataNode - Worker node that stores actual data blocks
+ * 
+ * Responsibilities:
+ * - Store and retrieve data blocks
+ * - Send periodic heartbeats to NameNode
+ * - Handle block read/write requests from clients
+ */
+class DataNode final : public DataNodeService::Service {
+public:
+    DataNode(const std::string& address, const std::string& namenode_address);
+    ~DataNode() override;
 
-    private:
-        grpc::Status WriteBlock(
-            grpc::ServerContext* context,
-            grpc::ServerReader<WriteBlockRequest>* reader,
-            WriteBlockResponse* response) override;
+    // Disable copy
+    DataNode(const DataNode&) = delete;
+    DataNode& operator=(const DataNode&) = delete;
 
-        grpc::Status ReadBlock(
-            grpc::ServerContext* context,
-            const ReadBlockRequest* request,
-            grpc::ServerWriter<ReadBlockResponse>* writer) override;
+    /**
+     * @brief Start the DataNode gRPC server and heartbeat thread
+     */
+    void start();
 
-        void send_heartbeat();
-        void heartbeat_loop();
+    /**
+     * @brief Stop the DataNode gRPC server and heartbeat thread
+     */
+    void stop();
 
-        std::string address_;
-        std::string namenode_address_;
-        std::unique_ptr<grpc::Server> server_;
-        std::thread heartbeat_thread_;
-        std::atomic<bool> running_;
-        std::shared_ptr<grpc::Channel> channel_;
-        std::unique_ptr<NameNodeService::Stub> stub_;
-    };
-}
+private:
+    // gRPC service implementations
+    grpc::Status WriteBlock(
+        grpc::ServerContext* context,
+        grpc::ServerReader<WriteBlockRequest>* reader,
+        WriteBlockResponse* response) override;
+
+    grpc::Status ReadBlock(
+        grpc::ServerContext* context,
+        const ReadBlockRequest* request,
+        grpc::ServerWriter<ReadBlockResponse>* writer) override;
+
+    // Heartbeat methods
+    void send_heartbeat();
+    void heartbeat_loop();
+
+    // Member variables
+    std::string address_;
+    std::string namenode_address_;
+    std::unique_ptr<grpc::Server> server_;
+    std::thread heartbeat_thread_;
+    std::atomic<bool> running_;
+    std::shared_ptr<grpc::Channel> channel_;
+    std::unique_ptr<NameNodeService::Stub> stub_;
+};
+
+} // namespace minidfs
 
 #endif // MINIDFS_DATANODE_H

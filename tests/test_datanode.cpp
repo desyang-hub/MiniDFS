@@ -6,9 +6,9 @@ class DataNodeTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create test DataNode instances
-        address_ = minidfs::Config::DEFAULT_DATANODE_ADDRESS + ":" + 
+        address_ = std::string(minidfs::Config::DEFAULT_DATANODE_ADDRESS) + ":" + 
                   std::to_string(minidfs::Config::DEFAULT_DATANODE_PORT);
-        namenode_address_ = minidfs::Config::DEFAULT_NAMENODE_ADDRESS + ":" + 
+        namenode_address_ = std::string(minidfs::Config::DEFAULT_NAMENODE_ADDRESS) + ":" + 
                            std::to_string(minidfs::Config::DEFAULT_NAMENODE_PORT);
         datanode_ = std::make_unique<minidfs::DataNode>(address_, namenode_address_);
     }
