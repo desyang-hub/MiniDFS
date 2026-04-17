@@ -6,7 +6,7 @@ class ClientTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create test client
-        namenode_address_ = minidfs::Config::DEFAULT_NAMENODE_ADDRESS + ":" + 
+        namenode_address_ = std::string(minidfs::Config::DEFAULT_NAMENODE_ADDRESS) + ":" + 
                            std::to_string(minidfs::Config::DEFAULT_NAMENODE_PORT);
         client_ = std::make_unique<minidfs::Client>(namenode_address_);
     }

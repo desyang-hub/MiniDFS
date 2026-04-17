@@ -5,47 +5,72 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include <grpcpp/grpcpp.h>
+#include <mutex>
 #include <shared_mutex>
+#include <grpcpp/grpcpp.h>
 #include "dfs.grpc.pb.h"
 #include "common/logger.h"
 
 namespace minidfs {
-    class NameNode final : public NameNodeService::Service {
-    public:
-        explicit NameNode(const std::string& address);
-        ~NameNode();
 
-        void start();
-        void stop();
+/**
+ * @brief NameNode - The master node that manages filesystem metadata and DataNodes
+ * 
+ * Responsibilities:
+ * - Maintain filesystem namespace and metadata
+ * - Track registered DataNodes via heartbeats
+ * - Manage file-to-block mappings
+ * - Handle client metadata operations
+ */
+class NameNode final : public NameNodeService::Service {
+public:
+    explicit NameNode(const std::string& address);
+    ~NameNode() override;
 
-    private:
-        grpc::Status RegisterDataNode(
-            grpc::ServerContext* context,
-            const RegisterRequest* request,
-            RegisterResponse* response) override;
+    // Disable copy
+    NameNode(const NameNode&) = delete;
+    NameNode& operator=(const NameNode&) = delete;
 
-        grpc::Status Heartbeat(
-            grpc::ServerContext* context,
-            const HeartbeatRequest* request,
-            HeartbeatResponse* response) override;
+    /**
+     * @brief Start the NameNode gRPC server
+     */
+    void start();
 
-        grpc::Status GetBlockLocations(
-            grpc::ServerContext* context,
-            const GetBlockLocationsRequest* request,
-            GetBlockLocationsResponse* response) override;
+    /**
+     * @brief Stop the NameNode gRPC server
+     */
+    void stop();
 
-        grpc::Status AddBlock(
-            grpc::ServerContext* context,
-            const AddBlockRequest* request,
-            AddBlockResponse* response) override;
+private:
+    // gRPC service implementations
+    grpc::Status RegisterDataNode(
+        grpc::ServerContext* context,
+        const RegisterRequest* request,
+        RegisterResponse* response) override;
 
-        std::string address_;
-        std::unique_ptr<grpc::Server> server_;
-        std::unordered_map<std::string, FileMetadata> file_metadata_;
-        std::vector<DataNodeInfo> data_nodes_;
-        std::shared_mutex metadata_mutex_;
-    };
-}
+    grpc::Status Heartbeat(
+        grpc::ServerContext* context,
+        const HeartbeatRequest* request,
+        HeartbeatResponse* response) override;
+
+    grpc::Status GetBlockLocations(
+        grpc::ServerContext* context,
+        const GetBlockLocationsRequest* request,
+        GetBlockLocationsResponse* response) override;
+
+    grpc::Status AddBlock(
+        grpc::ServerContext* context,
+        const AddBlockRequest* request,
+        AddBlockResponse* response) override;
+
+    // Member variables
+    std::string address_;
+    std::unique_ptr<grpc::Server> server_;
+    std::unordered_map<std::string, FileMetadata> file_metadata_;
+    std::vector<DataNodeInfo> data_nodes_;
+    mutable std::shared_mutex metadata_mutex_;  ///< Protects file_metadata_ and data_nodes_
+};
+
+} // namespace minidfs
 
 #endif // MINIDFS_NAMENODE_H

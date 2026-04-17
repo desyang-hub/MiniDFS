@@ -1,2 +1,49 @@
+```
+# Build artifacts
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.exe
+*.out
+
+# CMake build directories
 build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.manifest
+compile_commands.json
+
+# Dependencies
+venv/
+.venv/
+__pycache__/
+*.egg-info/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# OS specific
+.DS_Store
+Thumbs.db
+```
